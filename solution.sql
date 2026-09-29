@@ -1,21 +1,65 @@
--- Lab Program 13
--- Normalize the Student table up to Third Normal Form (3NF).
---
--- Write your solution below.
---
--- Functional Dependencies:
--- StudentID -> StudentName, CourseName
--- CourseName -> FacultyName
--- FacultyName -> DepartmentName
---
--- Requirements:
--- 1. Create normalized tables.
--- 2. Define primary keys.
--- 3. Define foreign keys.
--- 4. Insert sample data.
---
--- Do not modify test.sh or .github/workflows/autograding.yml.
+USE collegeDBbca;
+CREATE TABLE Department2 (
+DepartmentID INT PRIMARY KEY,
+DepartmentName VARCHAR(50)
+);
 
-USE CollegeDB;
+CREATE TABLE Course2 (
+CourseID INT PRIMARY KEY,
+CourseName VARCHAR(50),
+DepartmentID INT,
+FOREIGN KEY (DepartmentID)
+REFERENCES Department2(DepartmentID)
+);
 
--- Write your 3NF solution here.
+CREATE TABLE Faculty (
+FacultyID INT PRIMARY KEY,
+FacultyName VARCHAR(50),
+DepartmentID INT,
+FOREIGN KEY (DepartmentID)
+REFERENCES Department2(DepartmentID)
+);
+
+CREATE TABLE Student2 (
+StudentID INT PRIMARY KEY,
+StudentName VARCHAR(50),
+CourseID INT,
+FacultyID INT,
+FOREIGN KEY (CourseID)
+REFERENCES Course(CourseID),
+FOREIGN KEY (FacultyID)
+REFERENCES Faculty(FacultyID)
+);
+
+INSERT INTO Department2 VALUES
+(1,"Computer Science"),
+(2,"Commerce");
+
+INSERT INTO Course2 VALUES
+(101,"BCA", 1),
+(102,"BCom", 2);
+
+
+INSERT INTO Faculty VALUES
+(201,"Dr. Kumar", 1),
+(202,"Dr. Ravi", 2);
+
+INSERT INTO Student2 VALUES
+(1,"Arun", 101, 201),
+(2,"Priya", 101, 201),
+(3,"Rahul", 102, 202);
+
+SELECT
+s.StudentID,
+s.StudentName,
+c.CourseName,
+f.FacultyName,
+d.DepartmentName
+FROM Student s
+JOIN Course c
+ON s.CourseID = c.CourseID
+JOIN Faculty f
+ON s.FacultyID = f.FacultyID
+JOIN Department d
+ON c.DepartmentID = d.DepartmentID;
+DROP TABLE Department;
